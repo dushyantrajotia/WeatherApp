@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <style>
+        body {
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            text-align: center;
+            margin: 50px;
+            height: 100vh;
+            background: linear-gradient(to right, #0077b6, #90e0ef);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .main-container {
+            display: flex;
+            gap: 20px; /* Adds space between containers */
+        }
+
+        .container {
+            width: 300px;
+            padding: 20px;
+            background: #028090;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            color: white;
+        }
+
+        input, button {
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 16px;
+            width: 80%;
+            border-radius: 10px;
+            border: none;
+        }
+
+        button {
+            background-color: #05668D;
+            color: white;
+            cursor: pointer;
+        }
+
+        .weather-container {
+            width: 300px;
+            padding: 20px;
+            background: #02c39a;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            display: none; /* Hidden by default */
+            color: white;
+            text-align: left;
+        }
+
+        .weather-container img {
+            width: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="container">
+            <h2>WEATHER APP</h2>
+            <h4>dev : dushyantrajotia</h4>
+            <input type="text" id="city" placeholder="Enter city name">
+            <button onclick="getWeather()">Search Weather</button>
+        </div>
+
+        <div class="weather-container" id="weatherInfo">
+        </div>
+    </div>
+
+    <script>
+        async function getWeather() {
+            const city = document.getElementById('city').value;
+            if (!city) {
+                alert('City name cannot be empty');
+                return;
+            }
+            
+            const apiKey = 'b4a91f25f5f641da95533132251202';
+            const url = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&aqi=yes`;
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                if (data.error) {
+                    document.getElementById('weatherInfo').innerHTML = `<p>${data.error.message}</p>`;
+                    return;
+                }
+
+                const weatherContainer = document.getElementById('weatherInfo');
+                weatherContainer.style.display = "block"; // Show the container
+
+                weatherContainer.innerHTML = `
+                    <h3>${data.location.name}, ${data.location.country}</h3>
+                    <p>Temperature: ${data.current.temp_c}°C</p>
+                    <p>Condition: ${data.current.condition.text}</p>
+                    <img src="${data.current.condition.icon}" alt="weather icon">
+                    <p>Humidity: ${data.current.humidity}%</p>
+                    <p>Air Quality Index: ${data.current.air_quality.pm2_5.toFixed(2)}</p>
+                `;
+            } catch (error) {
+                document.getElementById('weatherInfo').innerHTML = '<p>Error fetching data</p>';
+            }
+        }
+    </script>
+</body>
+</html>
